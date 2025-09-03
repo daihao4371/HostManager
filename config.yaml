@@ -1,0 +1,96 @@
+groups:
+- name: OA发版系统机器
+  hosts:
+  - name: OA-1
+    ip: 10.10.110.4
+    port: 22
+    username: app
+    auth_type: key
+    key_path: /Users/daihao/.ssh/id_rsa
+    description: 主要的OA应用服务器
+    tags:
+    - production
+    - web
+    favorite: true
+  - name: OA-2
+    ip: 10.10.110.12
+    port: 22
+    username: app
+    auth_type: key
+    key_path: /Users/daihao/.ssh/id_rsa
+  - name: OA-3
+    ip: 10.10.110.119
+    port: 22
+    username: app
+    auth_type: key
+    key_path: /Users/daihao/.ssh/id_rsa
+  - name: OA-4
+    ip: 10.10.90.51
+    port: 22
+    username: app
+    auth_type: key
+    key_path: /Users/daihao/.ssh/id_rsa
+  - name: OA-5
+    ip: 10.10.110.65
+    port: 22
+    username: app
+    auth_type: key
+    key_path: /Users/daihao/.ssh/id_rsa
+- name: 堡垒机
+  hosts:
+  - name: 堡垒机-1
+    ip: 10.250.43.241
+    port: 2222
+    username: "250899941"
+    auth_type: password
+    password: Dh123456!@
+    description: 跳板机，用于访问内网资源
+    tags:
+    - bastion
+    - security
+    favorite: true
+ui_config:
+  theme: dark
+  language: zh
+  key_bindings:
+    exit: Esc
+    search: /
+    favorites: f
+    status_check: s
+    reload: r
+    toggle_fav: Space
+    theme_switch: t
+    layout_switch: l
+  layout:
+    type: single
+    show_details: false
+    column_width: 80
+  themes:
+    light:
+      background: 15
+      foreground: 0
+      highlight: 4
+      border: 6
+      success: 2
+      warning: 3
+      error: 1
+      info: 5
+      accent1: 0
+      accent2: 0
+      muted: 0
+      surface: 0
+      on_surface: 0
+    dark:
+      background: 0
+      foreground: 8
+      highlight: 516
+      border: 5
+      success: 515
+      warning: 516
+      error: 514
+      info: 519
+      accent1: 6
+      accent2: 7
+      muted: 8
+      surface: 0
+      on_surface: 8
