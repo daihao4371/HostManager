@@ -1,31 +1,30 @@
-# HostManager - 企业级SSH连接管理工具
+# HostManager - macOS iTerm2 SSH会话管理工具
 
-🖥️ **简洁、强大、可维护** 的SSH连接管理工具，遵循世界级代码架构标准，专为iTerm2和终端用户设计。
+🍎 **专为macOS iTerm2设计**的SSH会话管理工具，让你在Mac上更高效地管理和连接SSH服务器。
 
-## ✨ 核心特性
+## ✨ 为什么选择HostManager？
 
-### 🏗️ 架构设计
-- **简洁原则**: 遵循KISS和YAGNI原则，避免过度工程化
-- **可读性优先**: 代码即文档，直观易懂的逻辑结构
-- **模块化设计**: 清晰的责任分离和低耦合架构
+### 🍎 macOS原生体验
+- **iTerm2深度集成**: 专为iTerm2优化的SSH会话管理
+- **原生快捷键**: 支持macOS键盘快捷键习惯
+- **Spotlight集成**: 可通过Spotlight快速启动
+- **多窗口支持**: 完美适配iTerm2的多标签和分屏
 
-### 🎯 功能特性
-- **双模式支持**: 全屏UI界面 + 命令行工具
-- **分组管理**: 按环境、项目等维度组织主机
-- **收藏功能**: 快速访问常用主机
-- **智能搜索**: 按名称、IP、用户名搜索
-- **状态监控**: 批量检查主机在线状态
-- **快速连接**: 一键连接常用主机
-- **连接历史**: 自动记录连接记录
-- **主题切换**: 支持明亮/暗色主题
-- **iTerm2集成**: 完美配合iTerm2使用
+### 🚀 SSH会话管理
+- **一键连接**: 告别复杂的SSH命令记忆
+- **会话分组**: 按项目、环境智能分类SSH连接
+- **连接历史**: 自动记录最近使用的SSH会话
+- **状态监控**: 实时检查服务器连接状态
+- **收藏夹**: 快速访问常用服务器
+- **智能搜索**: 按服务器名称、IP快速定位
+- **双界面**: 图形化菜单 + 命令行，适合不同使用场景
 
 ## 🚀 快速开始
 
 ### 系统要求
-- Go 1.24.4+
-- macOS/Linux/Windows
-- 终端支持（推荐iTerm2）
+- **macOS 10.15+** (专为macOS设计)
+- **iTerm2 3.0+** (必需，最佳体验)
+- **Go 1.24.4+** (仅构建时需要)
 
 ### 安装
 
@@ -34,169 +33,203 @@
 git clone https://github.com/daihao4371/hostmanager.git
 cd hostmanager
 
-# 安装依赖（自动处理）
-go mod download
+# 编译macOS版本
+go build -o hostmanager .
 
-# 编译
-go build .
+# 安装到系统路径
+sudo cp hostmanager /usr/local/bin/
 
-# 安装到系统（推荐）
+# 或者安装到用户路径
+cp hostmanager ~/bin/  # 确保~/bin在PATH中
+
+# iTerm2集成设置
 chmod +x install.sh
 ./install.sh
 ```
 
-### 基本使用
+### 在iTerm2中使用
 
 ```bash
-# 启动全屏UI界面
+# 启动全屏SSH会话选择界面
 ./hostmanager
 
-# 显示帮助信息
-./hostmanager help
-
-# 列出所有主机
-./hostmanager list
-
-# 按分组显示
-./hostmanager list --groups
-
-# 连接到主机
+# 快速连接（支持tab补全）
 ./hostmanager connect server1
 
-# 搜索主机
+# 查看所有SSH会话
+./hostmanager list
+
+# 按环境分组查看
+./hostmanager list --groups
+
+# 搜索特定服务器
 ./hostmanager search web
 
-# 检查主机状态
+# 检查服务器在线状态  
 ./hostmanager status server1
 ```
 
-## 📋 命令行接口
+## 📋 SSH会话管理命令
 
-### 主要命令
+### 核心命令
 
 | 命令 | 简写 | 说明 | 示例 |
 |------|------|------|------|
-| `connect` | `c` | 连接到指定主机 | `hostmanager connect server1` |
-| `list` | `ls`, `l` | 显示主机列表 | `hostmanager list --groups` |
-| `status` | `s` | 检查主机状态 | `hostmanager status server1` |
-| `search` | - | 搜索主机 | `hostmanager search web` |
-| `favorites` | `fav`, `f` | 显示收藏夹 | `hostmanager favorites` |
-| `groups` | `g` | 按分组显示 | `hostmanager groups` |
-| `history` | `h` | 显示连接历史 | `hostmanager history` |
+| `connect` | `c` | 在iTerm2中连接SSH会话 | `hostmanager connect server1` |
+| `list` | `ls`, `l` | 显示SSH会话列表 | `hostmanager list --groups` |
+| `status` | `s` | 检查服务器连接状态 | `hostmanager status server1` |
+| `search` | - | 搜索SSH会话 | `hostmanager search web` |
+| `favorites` | `fav`, `f` | 显示收藏的会话 | `hostmanager favorites` |
+| `groups` | `g` | 按项目环境分组显示 | `hostmanager groups` |
+| `history` | `h` | 显示SSH连接历史 | `hostmanager history` |
+| `add-host` | - | 添加新的SSH会话 | `hostmanager add-host` |
+| `edit` | - | 编辑SSH会话配置 | `hostmanager edit server1` |
+| `remove` | `rm` | 删除SSH会话 | `hostmanager remove server1` |
+| `init` | - | 初始化配置文件 | `hostmanager init` |
 | `help` | `--help`, `-h` | 显示帮助 | `hostmanager help` |
 | `version` | `--version`, `-v` | 显示版本 | `hostmanager version` |
 
-### 便捷别名（安装后可用）
+### iTerm2快捷别名
 
 ```bash
 hm                    # = hostmanager
-hml                   # = hostmanager list
+hml                   # = hostmanager list  
 hmg                   # = hostmanager list --groups
 hmf                   # = hostmanager favorites
-hms server1           # = hostmanager status server1
+hms server1           # = hostmanager status server1  
 hmc server1           # = hostmanager connect server1
-hm-connect server1    # 智能连接函数
-hm-search web         # 智能搜索函数
+hm-connect server1    # iTerm2智能连接函数
+hm-search web         # iTerm2智能搜索函数
 ```
 
-## 🎮 全屏UI界面
+## 🎮 iTerm2全屏会话管理界面
 
-无参数运行时进入全屏交互界面：
+在iTerm2中无参数运行，启动专用的SSH会话管理界面：
 
 ```bash
 ./hostmanager
 ```
 
-### UI快捷键
+### 专为iTerm2优化的快捷键
 
-- `↑↓` : 导航
-- `Enter` : 选择/连接
-- `Esc` : 返回/退出
-- `Space` : 切换收藏
-- `f` : 收藏夹模式
-- `s` : 状态检查
-- `t` : 切换主题
-- `l` : 切换布局
-- `/` : 搜索模式
-- `1-5` : 快速连接历史记录
-- `q` : 退出
+- `↑↓` : 导航SSH会话列表
+- `Enter` : 在iTerm2新标签中连接SSH会话
+- `Esc` : 返回/退出会话管理界面  
+- `Space` : 切换SSH会话收藏状态
+- `f` : 显示收藏的SSH会话
+- `s` : 批量检查服务器状态
+- `t` : 切换iTerm2主题（明亮/暗色）
+- `l` : 切换显示布局
+- `/` : 搜索SSH会话
+- `1-5` : 快速连接最近5个SSH会话
+- `q` : 退出HostManager
 
-## 🔧 iTerm2 集成
+## 🔧 iTerm2深度集成配置
 
-### 推荐设置
+### macOS系统集成
 
-1. **创建快捷键**：
-   - `Cmd+Shift+H`: 运行 `hostmanager list`
-   - `Cmd+Shift+C`: 运行 `hostmanager connect`
+1. **iTerm2全局快捷键**：
+   - `Cmd+Shift+H`: 启动HostManager会话管理
+   - `Cmd+Shift+S`: 快速SSH连接菜单
 
-2. **Profile设置**：
-   - 为不同环境设置不同的Profile
-   - 配置不同的颜色主题区分环境
+2. **iTerm2 Profile配置**：
+   - 为生产环境设置红色背景提醒
+   - 为测试环境设置绿色背景区分
+   - 配置不同的字体和透明度
 
-3. **Split Pane使用**：
+3. **多窗口SSH会话管理**：
    ```bash
-   # 在不同面板中同时连接多台服务器
-   hostmanager connect server1  # 左侧面板
-   hostmanager connect server2  # 右侧面板
+   # 在不同iTerm2面板中同时管理多个SSH会话
+   hostmanager connect prod-server1  # 左侧面板
+   hostmanager connect test-server2   # 右侧面板
+   hostmanager connect db-server3     # 底部面板
    ```
 
-### 高级集成
+### 高级工作流集成
 
 ```bash
-# 在iTerm2中创建自定义函数（需要安装fzf）
+# 在iTerm2中创建智能SSH连接函数（需要安装fzf）
 function quick-ssh() {
-    local host=$(hostmanager list | fzf --header="选择要连接的主机" | awk '{print $2}')
+    local host=$(hostmanager list | fzf --header="选择SSH会话连接" | awk '{print $2}')
     if [[ -n "$host" ]]; then
         hostmanager connect "$host"
     fi
 }
 
-# 快速状态检查
-function check-servers() {
-    hostmanager status | grep -E "(🔴|❓)" && echo "发现离线或未知状态的服务器！"
+# 批量服务器状态检查
+function check-all-servers() {
+    hostmanager status | grep -E "(🔴|❓)" && echo "⚠️ 发现离线或异常的服务器！"
+}
+
+# 在iTerm2中创建SSH会话组快速启动
+function start-dev-env() {
+    osascript -e 'tell app "iTerm2" to create window with default profile'
+    hostmanager connect dev-web &
+    sleep 1
+    hostmanager connect dev-db &  
+    sleep 1
+    hostmanager connect dev-cache &
 }
 ```
 
-## ⚙️ 配置文件
+## ⚙️ SSH会话配置文件
 
-配置文件位置：`config.yaml`
+专为macOS用户设计的SSH会话配置：`config.yaml`
 
 ```yaml
 groups:
-  - name: "生产环境"
+  - name: "生产环境 🔴"
     hosts:
       - name: "Web服务器-1"
-        ip: "192.168.1.100"
+        ip: "192.168.1.100" 
         port: 22
         username: "admin"
-        password: "your_password"
-        favorite: true
-        
-  - name: "测试环境"
-    hosts:
-      - name: "测试服务器"
-        ip: "192.168.1.200"
-        port: 22
-        username: "test"
         auth_type: "key"
         key_path: "~/.ssh/id_rsa"
+        description: "主要的Web服务器"
+        tags: ["production", "web"]
+        favorite: true
+        
+  - name: "开发环境 🟢" 
+    hosts:
+      - name: "开发服务器"
+        ip: "192.168.1.200"
+        port: 22
+        username: "dev"
+        auth_type: "key"  
+        key_path: "~/.ssh/id_rsa"
+        description: "开发测试服务器"
+        tags: ["development"]
 
+# iTerm2专用界面配置
 ui_config:
-  theme: "dark"  # "light" or "dark"
+  theme: "dark"  # 适配iTerm2暗色主题
   language: "zh-CN"
+  key_bindings:
+    exit: "Esc"
+    search: "/"
+    favorites: "f"
+    status_check: "s"
+    toggle_fav: "Space"
+    theme_switch: "t"
   layout:
-    type: "single"  # "single" or "columns"
+    type: "single"
+    show_details: true  # 在iTerm2中显示详细信息
 ```
 
-## 🛠️ 开发指南
+## 🛠️ macOS开发者指南
 
-### 架构原则
+### 项目目标
+专注于为macOS开发者提供最佳的iTerm2 SSH会话管理体验。
 
-本项目严格遵循以下架构原则：
+### 设计理念
 
-1. **简洁性**: 每个模块只负责单一职责
-2. **可读性**: 代码自文档化，逻辑清晰直观
-3. **可维护性**: 低耦合高内聚，易于扩展
+macOS原生应用的设计原则：
+
+1. **简洁优雅**: 符合Apple Human Interface Guidelines
+2. **直觉操作**: 遵循macOS用户使用习惯
+3. **深度集成**: 与iTerm2无缝配合
+4. **高性能**: 针对macOS系统优化
 
 ### 项目结构
 

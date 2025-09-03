@@ -41,7 +41,7 @@ func NewRenderEngine(t *theme.Theme) *RenderEngine {
 func (r *RenderEngine) RenderCard(x, y, width, height int, style ComponentStyle, content string, state ComponentState) {
 	// 绘制阴影效果
 	if style.Shadow.Enabled {
-		r.drawShadow(x+style.Shadow.OffsetX, y+style.Shadow.OffsetY, width, height, style.Shadow)
+		r.drawShadow(x+style.Shadow.OffsetX, y+style.Shadow.OffsetY, width, height)
 	}
 
 	// 绘制渐变背景
@@ -134,7 +134,7 @@ func (r *RenderEngine) RenderStatusBadge(x, y int, status, text string) {
 }
 
 // 绘制高级进度条
-func (r *RenderEngine) RenderAdvancedProgressBar(x, y, width int, progress float32, segments int, style ComponentStyle, animated bool) {
+func (r *RenderEngine) RenderAdvancedProgressBar(x, y, width int, progress float32, segments int, animated bool) {
 	// 背景条
 	bgChar := '░'
 	for i := 0; i < width; i++ {
@@ -209,8 +209,8 @@ func (r *RenderEngine) getProgressColor(ratio float32) termbox.Attribute {
 }
 
 // 绘制进度条
-func (r *RenderEngine) RenderProgressBar(x, y, width int, progress float32, style ComponentStyle) {
-	r.RenderAdvancedProgressBar(x, y, width, progress, 1, style, true)
+func (r *RenderEngine) RenderProgressBar(x, y, width int, progress float32) {
+	r.RenderAdvancedProgressBar(x, y, width, progress, 1, true)
 }
 
 // 私有辅助方法
@@ -244,7 +244,7 @@ func (r *RenderEngine) drawTextWithStyle(x, y int, text string, color termbox.At
 }
 
 // 绘制阴影
-func (r *RenderEngine) drawShadow(x, y, width, height int, shadow ShadowStyle) {
+func (r *RenderEngine) drawShadow(x, y, width, height int) {
 	shadowChar := '░'
 	shadowColor := termbox.Attribute(8) // 深灰色
 
@@ -356,7 +356,7 @@ func (r *RenderEngine) getStateColor(baseColor termbox.Attribute, state Componen
 // 绘制高级加载动画
 func (r *RenderEngine) RenderAdvancedSpinner(x, y int, spinnerType string, frame int, iconSet *IconSet) {
 	var icon string
-	
+
 	switch spinnerType {
 	case "dots":
 		spinnerFrames := []string{"◐", "◓", "◑", "◒"}
@@ -374,11 +374,11 @@ func (r *RenderEngine) RenderAdvancedSpinner(x, y int, spinnerType string, frame
 		spinnerFrames := []string{"◐", "◓", "◑", "◒"}
 		icon = spinnerFrames[frame%len(spinnerFrames)]
 	}
-	
+
 	// 动态颜色循环
 	colors := []termbox.Attribute{r.theme.Info, r.theme.Success, r.theme.Warning}
 	color := colors[frame%len(colors)]
-	
+
 	r.setCell(x, y, rune(icon[0]), color, r.theme.Background)
 }
 
@@ -389,10 +389,10 @@ func (r *RenderEngine) RenderSpinner(x, y int, frame int) {
 }
 
 // 绘制工具提示
-func (r *RenderEngine) RenderTooltip(x, y int, text string, direction string) {
+func (r *RenderEngine) RenderTooltip(x, y int, text string) {
 	tooltipWidth := len(text) + 4
 	tooltipHeight := 3
-	
+
 	// 确保在屏幕边界内
 	if x < 0 {
 		x = 0
@@ -406,14 +406,14 @@ func (r *RenderEngine) RenderTooltip(x, y int, text string, direction string) {
 	if y+tooltipHeight >= r.height {
 		y = r.height - tooltipHeight - 1
 	}
-	
+
 	// 绘制工具提示背景
 	for dy := 0; dy < tooltipHeight; dy++ {
 		for dx := 0; dx < tooltipWidth; dx++ {
 			r.setCell(x+dx, y+dy, ' ', r.theme.Foreground, r.theme.Background)
 		}
 	}
-	
+
 	// 绘制提示文本
 	textX := x + 2
 	textY := y + 1
@@ -425,7 +425,7 @@ func (r *RenderEngine) RenderClickFeedback(x, y int, frame int) {
 	if frame > 10 {
 		return
 	}
-	
+
 	// 简单的扩散效果
 	char := '●'
 	color := r.theme.Info
@@ -437,14 +437,14 @@ func (r *RenderEngine) StartAnimation(component *UIComponent) {
 	if component.Animation != nil && component.Animation.Active {
 		return
 	}
-	
+
 	animation := &Animation{
 		Config:    component.Style.Animation,
 		StartTime: time.Now(),
 		Progress:  0.0,
 		Active:    true,
 	}
-	
+
 	component.Animation = animation
 	r.animations = append(r.animations, animation)
 }
@@ -453,12 +453,12 @@ func (r *RenderEngine) StartAnimation(component *UIComponent) {
 func (r *RenderEngine) UpdateAnimations() {
 	currentTime := time.Now()
 	var activeAnimations []*Animation
-	
+
 	for _, anim := range r.animations {
 		if !anim.Active {
 			continue
 		}
-		
+
 		elapsed := currentTime.Sub(anim.StartTime)
 		if elapsed >= anim.Config.Duration {
 			anim.Progress = 1.0
@@ -467,12 +467,12 @@ func (r *RenderEngine) UpdateAnimations() {
 			rawProgress := float32(elapsed) / float32(anim.Config.Duration)
 			anim.Progress = applyEasing(rawProgress, anim.Config.Easing)
 		}
-		
+
 		if anim.Active {
 			activeAnimations = append(activeAnimations, anim)
 		}
 	}
-	
+
 	r.animations = activeAnimations
 }
 

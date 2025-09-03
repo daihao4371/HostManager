@@ -1,8 +1,8 @@
 package ui
 
 import (
-	"time"
 	"github.com/nsf/termbox-go"
+	"time"
 )
 
 // 交互管理器
@@ -49,7 +49,7 @@ func (im *InteractionManager) HandleMouseHover(x, y int, component *UIComponent)
 		if im.hoverTimer != nil {
 			im.hoverTimer.Stop()
 		}
-		
+
 		im.hoverTarget = component
 		im.hoverTimer = time.AfterFunc(im.feedbackConfig.HoverDelay, func() {
 			im.showTooltip(x, y, component)
@@ -73,7 +73,7 @@ func (im *InteractionManager) HandleMouseClick(x, y int, component *UIComponent)
 		}
 		im.clickFeedbacks = append(im.clickFeedbacks, feedback)
 	}
-	
+
 	// 清除工具提示
 	im.hideAllTooltips()
 }
@@ -85,13 +85,13 @@ func (im *InteractionManager) HandleKeyPress(key termbox.Key, ch rune) bool {
 		im.hideAllTooltips()
 		return true
 	}
-	
+
 	// 处理F1显示帮助
 	if key == termbox.KeyF1 {
 		im.showKeyboardHints()
 		return true
 	}
-	
+
 	return false
 }
 
@@ -109,7 +109,7 @@ func (im *InteractionManager) Update() {
 		}
 	}
 	im.clickFeedbacks = activeClickFeedbacks
-	
+
 	// 更新工具提示
 	activeTooltips := make([]Tooltip, 0)
 	for _, tooltip := range im.tooltips {
@@ -131,11 +131,11 @@ func (im *InteractionManager) Render(renderer *RenderEngine) {
 			renderer.RenderClickFeedback(feedback.X, feedback.Y, feedback.Frame)
 		}
 	}
-	
+
 	// 渲染工具提示
 	for _, tooltip := range im.tooltips {
 		if tooltip.Visible {
-			renderer.RenderTooltip(tooltip.X, tooltip.Y, tooltip.Text, tooltip.Direction)
+			renderer.RenderTooltip(tooltip.X, tooltip.Y, tooltip.Text)
 		}
 	}
 }
@@ -146,7 +146,7 @@ func (im *InteractionManager) showTooltip(x, y int, component *UIComponent) {
 	if tooltipText == "" {
 		return
 	}
-	
+
 	tooltip := Tooltip{
 		X:         x,
 		Y:         y,
@@ -156,7 +156,7 @@ func (im *InteractionManager) showTooltip(x, y int, component *UIComponent) {
 		Visible:   true,
 		Target:    component,
 	}
-	
+
 	im.tooltips = append(im.tooltips, tooltip)
 }
 
@@ -191,7 +191,7 @@ func (im *InteractionManager) showKeyboardHints() {
 		{"Space", "切换选择"},
 		{"Del", "删除项目"},
 	}
-	
+
 	// 创建提示面板
 	tooltip := Tooltip{
 		X:         5,
@@ -202,7 +202,7 @@ func (im *InteractionManager) showKeyboardHints() {
 		Visible:   true,
 		Target:    nil,
 	}
-	
+
 	im.tooltips = append(im.tooltips, tooltip)
 }
 
