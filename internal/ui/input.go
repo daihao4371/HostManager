@@ -8,12 +8,9 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-// 主输入处理函数（调试版本）
+// 主输入处理函数
 func (m *Menu) handleInput() bool {
 	ev := termbox.PollEvent()
-
-	// 调试信息
-	log.Printf("事件类型: %d, 按键: %d, 字符: %c", ev.Type, ev.Key, ev.Ch)
 
 	switch ev.Type {
 	case termbox.EventKey:

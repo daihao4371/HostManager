@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"time"
 
@@ -104,9 +105,6 @@ func (m *Menu) Run() {
 	// 启动动画管理器
 	m.startAnimationManager()
 	defer m.stopAnimationManager()
-
-	// 显示欢迎Toast
-	m.showToast("欢迎使用HostManager", "info", 2*time.Second)
 
 	for {
 		currentTime := time.Now()
@@ -362,16 +360,15 @@ func (m *Menu) connectSSH(host models.Host) {
 
 // SSH连接断开后的恢复处理
 func (m *Menu) recoverFromSSHDisconnect() {
-	// 显示断开通知
-	fmt.Printf("\n📋 与主机的连接已断开\n")
+	// 显示提示信息
 	fmt.Printf("按任意键返回主菜单...\n")
 
-	// 等待用户按键 - 使用标准输入而不是termbox
-	var input string
-	fmt.Scanln(&input)
+	// 使用简单的字符读取，避免需要回车
+	var b = make([]byte, 1)
+	os.Stdin.Read(b)
 
 	// 完全重新初始化termbox
-	termbox.Close() // 确保完全关闭
+	termbox.Close()                    // 确保完全关闭
 	time.Sleep(100 * time.Millisecond) // 短暂等待
 
 	err := termbox.Init()
@@ -400,5 +397,5 @@ func (m *Menu) recoverFromSSHDisconnect() {
 	m.filterHosts() // 重置过滤状态
 
 	// 显示恢复Toast
-	m.showToast("已返回主菜单", "info", 2*time.Second)
+	m.showToast("已返回主菜单", "success", 2*time.Second)
 }

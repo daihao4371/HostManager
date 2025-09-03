@@ -44,6 +44,8 @@ func (m *Menu) drawGroups(y int, groups []models.Group) {
 		y++
 	}
 
+	width, _ := termbox.Size()
+	
 	for i, group := range groups {
 		color := m.currentTheme.Foreground
 		prefix := "   "
@@ -54,6 +56,24 @@ func (m *Menu) drawGroups(y int, groups []models.Group) {
 
 		hostCount := len(group.Hosts)
 		groupDisplay := fmt.Sprintf("%s%s (%d台主机)", prefix, group.Name, hostCount)
+		
+		// 确保分组名称不被截断 - 使用简化的截断逻辑
+		maxDisplayWidth := width - 2
+		if len([]rune(groupDisplay)) > maxDisplayWidth {
+			// 计算可显示的分组名称长度
+			prefixLen := len([]rune(prefix))
+			suffixLen := len([]rune(fmt.Sprintf(" (%d台主机)", hostCount)))
+			maxNameLen := maxDisplayWidth - prefixLen - suffixLen - 3 // 为省略号留空间
+			
+			if maxNameLen > 0 {
+				nameRunes := []rune(group.Name)
+				if len(nameRunes) > maxNameLen {
+					truncatedName := string(nameRunes[:maxNameLen]) + "..."
+					groupDisplay = fmt.Sprintf("%s%s (%d台主机)", prefix, truncatedName, hostCount)
+				}
+			}
+		}
+		
 		m.printThemedString(0, y, groupDisplay, color)
 		y++
 	}
@@ -137,7 +157,18 @@ func (m *Menu) drawLeftColumn(x, y, width, height int) {
 			prefix = "▶ "
 		}
 
-		groupDisplay := fmt.Sprintf("%s%s (%d)", prefix, group.Name, len(group.Hosts))
+		// 智能截断分组名称以适应左栏宽度
+		hostCount := len(group.Hosts)
+		suffix := fmt.Sprintf(" (%d台)", hostCount)
+		maxNameWidth := width - len([]rune(prefix)) - len([]rune(suffix)) - 4 // 留出边距
+		
+		displayName := group.Name
+		if len([]rune(displayName)) > maxNameWidth && maxNameWidth > 3 {
+			nameRunes := []rune(displayName)
+			displayName = string(nameRunes[:maxNameWidth-3]) + "..."
+		}
+		
+		groupDisplay := fmt.Sprintf("%s%s%s", prefix, displayName, suffix)
 		m.printThemedStringInBounds(x, currentY, groupDisplay, color, width)
 		currentY++
 	}
@@ -163,16 +194,47 @@ func (m *Menu) drawRightColumn(x, y, width, height int) {
 	}
 }
 
-// 在指定范围内绘制字符串
+// 在指定范围内绘制字符串（正确处理宽字符）
 func (m *Menu) printThemedStringInBounds(x, y int, str string, color termbox.Attribute, maxWidth int) {
-	if len(str) > maxWidth-2 {
-		str = str[:maxWidth-5] + "..."
+	if maxWidth <= 0 {
+		return
 	}
-	for i, r := range str {
-		if x+i >= x+maxWidth {
+
+	runes := []rune(str)
+	currentDisplayWidth := 0
+	screenX := x
+	
+	for _, r := range runes {
+		// 计算字符显示宽度
+		charWidth := 1
+		if r >= 0x1F300 && r <= 0x1F9FF { // Emoji范围
+			charWidth = 2
+		} else if r >= 0x4E00 && r <= 0x9FFF { // 中文字符范围
+			charWidth = 2
+		} else if r >= 0x3400 && r <= 0x4DBF { // 中文扩展A区
+			charWidth = 2
+		} else if r >= 0x20000 && r <= 0x2A6DF { // 中文扩展B区
+			charWidth = 2
+		} else if r >= 128 {
+			charWidth = 2
+		}
+		
+		// 检查是否还有空间显示这个字符
+		if currentDisplayWidth + charWidth > maxWidth || screenX >= x + maxWidth {
 			break
 		}
-		termbox.SetCell(x+i, y, r, color, m.currentTheme.Background)
+		
+		// 设置主字符
+		termbox.SetCell(screenX, y, r, color, m.currentTheme.Background)
+		screenX++
+		currentDisplayWidth++
+		
+		// 如果是宽字符，设置第二个位置的占位符
+		if charWidth == 2 && screenX < x + maxWidth {
+			termbox.SetCell(screenX, y, ' ', color, m.currentTheme.Background)
+			screenX++
+			currentDisplayWidth++
+		}
 	}
 }
 

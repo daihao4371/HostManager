@@ -1,0 +1,84 @@
+groups:
+- name: 生产环境
+  hosts:
+  - name: Web服务器-1
+    ip: 192.168.1.10
+    port: 22
+    username: admin
+    auth_type: key
+    key_path: ~/.ssh/id_rsa
+    description: 主要的Web应用服务器
+    tags:
+    - production
+    - web
+    favorite: false
+  - name: 数据库服务器
+    ip: 192.168.1.20
+    port: 22
+    username: dbadmin
+    auth_type: password
+    password: ""  # 请填写您的密码
+    description: 主数据库服务器
+    tags:
+    - production
+    - database
+    favorite: false
+
+- name: 开发环境
+  hosts:
+  - name: 开发服务器
+    ip: 192.168.1.100
+    port: 22
+    username: developer
+    auth_type: key
+    key_path: ~/.ssh/id_rsa
+    description: 开发测试服务器
+    tags:
+    - development
+    favorite: false
+
+ui_config:
+  theme: dark  # 可选: dark, light
+  language: zh  # 可选: zh, en
+  key_bindings:
+    exit: Esc
+    search: /
+    favorites: f
+    status_check: s
+    reload: r
+    toggle_fav: Space
+    theme_switch: t
+    layout_switch: l
+  layout:
+    type: single  # 可选: single, columns
+    show_details: false
+    column_width: 80
+  themes:
+    light:
+      background: 15
+      foreground: 0
+      highlight: 4
+      border: 6
+      success: 2
+      warning: 3
+      error: 1
+      info: 5
+      accent1: 0
+      accent2: 0
+      muted: 0
+      surface: 0
+      on_surface: 0
+    dark:
+      background: 0
+      foreground: 8
+      highlight: 516
+      border: 5
+      success: 515
+      warning: 516
+      error: 514
+      info: 519
+      accent1: 6
+      accent2: 7
+      muted: 8
+      surface: 0
+      on_surface: 8

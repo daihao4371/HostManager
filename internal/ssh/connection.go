@@ -82,8 +82,7 @@ func Connect(host models.Host, onConnect func(models.Host)) {
 			scriptPath, err := CreateExpectScript(host)
 			if err != nil {
 				fmt.Printf("创建expect脚本失败: %v\n", err)
-				fmt.Printf("按任意键返回主菜单...\n")
-				fmt.Scanln()
+				// 不在这里等待输入，让UI层处理
 				return
 			}
 
@@ -104,9 +103,7 @@ func Connect(host models.Host, onConnect func(models.Host)) {
 				fmt.Printf("连接失败: %v\n", err)
 			}
 			fmt.Printf("\n📋 与 %s 的连接已断开\n", host.Name)
-			fmt.Printf("按任意键返回主菜单...\n")
-
-			fmt.Scanln()
+			// 不在这里等待输入，让UI层处理
 			return
 		}
 	}
@@ -134,7 +131,5 @@ func Connect(host models.Host, onConnect func(models.Host)) {
 		fmt.Printf("连接失败: %v\n", err)
 	}
 	fmt.Printf("\n📋 与 %s 的连接已断开\n", host.Name)
-	fmt.Printf("按任意键返回主菜单...\n")
-
-	fmt.Scanln()
+	// 不在这里等待输入，让UI层统一处理
 }

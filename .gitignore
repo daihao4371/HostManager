@@ -1,0 +1,32 @@
+# 配置文件（包含敏感信息，不应提交到仓库）
+config.yaml
+
+# 编译后的二进制文件
+hostmanager
+hostmanager.exe
+
+# 临时文件
+*.tmp
+*.temp
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 日志文件
+*.log
+
+# SSH 密钥文件（如果项目中包含）
+*.pem
+*.key
+id_rsa*
+
+# 备份文件
+*.bak
+*.backup
