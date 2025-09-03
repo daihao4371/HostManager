@@ -69,6 +69,15 @@ func LoadConfig(filePath string) (*Config, error) {
 	return &config, nil
 }
 
+// 保存配置到文件（全局函数）
+func SaveConfig(filePath string, config *Config) error {
+	data, err := yaml.Marshal(config)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(filePath, data, 0644)
+}
+
 // 保存配置文件
 func (c *Config) Save(filePath string) error {
 	data, err := yaml.Marshal(c)

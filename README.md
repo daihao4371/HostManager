@@ -1,20 +1,31 @@
-# HostManager - SSH连接管理工具
+# HostManager - 企业级SSH连接管理工具
 
-🖥️ 为iTerm2和终端用户优化的SSH连接管理工具，提供直观的UI界面和强大的命令行功能。
+🖥️ **简洁、强大、可维护** 的SSH连接管理工具，遵循世界级代码架构标准，专为iTerm2和终端用户设计。
 
-## ✨ 主要特性
+## ✨ 核心特性
 
-- 🎯 **双模式支持**: 全屏UI界面 + 命令行工具
-- 📁 **分组管理**: 按环境、项目等维度组织主机
-- ⭐ **收藏功能**: 快速访问常用主机
-- 🔍 **智能搜索**: 按名称、IP、用户名搜索
-- 📊 **状态监控**: 批量检查主机在线状态
-- 🚀 **快速连接**: 一键连接常用主机
-- 📝 **连接历史**: 自动记录连接记录
-- 🎨 **主题切换**: 支持明亮/暗色主题
-- 🔧 **iTerm2集成**: 完美配合iTerm2使用
+### 🏗️ 架构设计
+- **简洁原则**: 遵循KISS和YAGNI原则，避免过度工程化
+- **可读性优先**: 代码即文档，直观易懂的逻辑结构
+- **模块化设计**: 清晰的责任分离和低耦合架构
+
+### 🎯 功能特性
+- **双模式支持**: 全屏UI界面 + 命令行工具
+- **分组管理**: 按环境、项目等维度组织主机
+- **收藏功能**: 快速访问常用主机
+- **智能搜索**: 按名称、IP、用户名搜索
+- **状态监控**: 批量检查主机在线状态
+- **快速连接**: 一键连接常用主机
+- **连接历史**: 自动记录连接记录
+- **主题切换**: 支持明亮/暗色主题
+- **iTerm2集成**: 完美配合iTerm2使用
 
 ## 🚀 快速开始
+
+### 系统要求
+- Go 1.24.4+
+- macOS/Linux/Windows
+- 终端支持（推荐iTerm2）
 
 ### 安装
 
@@ -22,6 +33,9 @@
 # 克隆项目
 git clone https://github.com/daihao4371/hostmanager.git
 cd hostmanager
+
+# 安装依赖（自动处理）
+go mod download
 
 # 编译
 go build .
@@ -174,49 +188,106 @@ ui_config:
     type: "single"  # "single" or "columns"
 ```
 
-## 🛠️ 开发
+## 🛠️ 开发指南
+
+### 架构原则
+
+本项目严格遵循以下架构原则：
+
+1. **简洁性**: 每个模块只负责单一职责
+2. **可读性**: 代码自文档化，逻辑清晰直观
+3. **可维护性**: 低耦合高内聚，易于扩展
 
 ### 项目结构
 
 ```
 hostmanager/
-├── main.go                 # 主入口（支持CLI/UI双模式）
+├── main.go                 # 应用入口点（CLI/UI路由）
 ├── config.yaml            # 配置文件示例
+├── config.example.yaml    # 配置模板文件
 ├── install.sh             # iTerm2集成安装脚本
-├── internal/
-│   ├── cli/               # 命令行接口
-│   │   └── cli.go         # CLI命令处理
-│   ├── config/            # 配置管理
-│   ├── models/            # 数据模型
-│   ├── ssh/              # SSH连接
-│   ├── theme/            # 主题管理
-│   ├── i18n/             # 国际化
-│   └── ui/               # UI界面
-│       ├── menu.go       # 菜单管理（增强版）
-│       ├── render.go     # 渲染引擎（高级）
-│       ├── components.go # UI组件（增强）
-│       ├── input.go      # 输入处理（修复）
-│       ├── interaction.go # 交互管理
-│       └── draw.go       # 绘制功能
-└── README.md             # 项目文档
+├── go.mod                 # Go模块依赖管理
+├── internal/              # 内部包（不对外暴露）
+│   ├── cli/               # 命令行接口层
+│   │   └── cli.go         # CLI命令处理和路由
+│   ├── config/            # 配置管理模块
+│   │   └── config.go      # 配置文件解析和验证
+│   ├── models/            # 数据模型层
+│   │   └── host.go        # 主机数据结构定义
+│   ├── ssh/               # SSH连接核心逻辑
+│   │   └── connection.go  # SSH连接实现
+│   ├── theme/             # 主题管理系统
+│   │   └── theme.go       # 主题配置和切换逻辑
+│   ├── i18n/              # 国际化支持
+│   │   └── texts.go       # 多语言文本管理
+│   └── ui/                # 用户界面层
+│       ├── menu.go        # 菜单状态管理
+│       ├── render.go      # 渲染引擎核心
+│       ├── components.go  # 可复用UI组件
+│       ├── input.go       # 用户输入处理
+│       ├── interaction.go # 用户交互逻辑
+│       ├── layout.go      # 布局管理系统
+│       └── draw.go        # 底层绘制功能
+└── README.md              # 项目文档
 ```
 
-### 构建
+### 代码质量标准
+
+- **函数复杂度**: 每个函数不超过30行
+- **类大小限制**: 每个结构体不超过300行
+- **嵌套控制**: 逻辑嵌套深度不超过3层
+- **参数限制**: 函数参数不超过4个
+- **错误处理**: 所有可能失败的操作都有明确的错误处理
+
+### 构建和测试
 
 ```bash
-# 开发构建
-go build .
+# 开发环境构建
+go build -v .
 
-# 交叉编译
-GOOS=linux GOARCH=amd64 go build -o hostmanager-linux .
-GOOS=darwin GOARCH=amd64 go build -o hostmanager-macos .
-GOOS=windows GOARCH=amd64 go build -o hostmanager-windows.exe .
+# 运行测试
+go test ./...
+
+# 代码格式化
+go fmt ./...
+
+# 静态检查
+go vet ./...
+
+# 交叉编译发布版本
+GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o dist/hostmanager-linux .
+GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o dist/hostmanager-macos .
+GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o dist/hostmanager-windows.exe .
 ```
 
-## 🤝 贡献
+### 开发规范
 
-欢迎提交Issue和Pull Request！
+遵循项目的 `CLAUDE.md` 中定义的架构师级别代码标准：
+
+- 使用 Guard Clauses 减少嵌套
+- 函数职责单一，易于测试
+- 错误处理显式且完整
+- 变量命名清晰描述用途
+- 代码注释解释"为什么"而非"做什么"
+
+## 🤝 贡献指南
+
+### 代码质量要求
+
+在提交代码前，请确保：
+
+1. **遵循架构原则**: 查看 `CLAUDE.md` 了解详细规范
+2. **通过所有检查**: 运行 `go test ./... && go vet ./... && go fmt ./...`
+3. **保持简洁性**: 函数不超过30行，嵌套不超过3层
+4. **错误处理**: 所有可能失败的操作都要有明确的错误处理
+
+### 提交流程
+
+1. Fork 项目
+2. 创建功能分支：`git checkout -b feature/new-feature`
+3. 遵循代码规范提交代码
+4. 提交Pull Request
 
 ## 📄 许可证
 
-MIT License
+MIT License - 详见 LICENSE 文件

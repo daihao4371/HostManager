@@ -1,5 +1,6 @@
 # 配置文件（包含敏感信息，不应提交到仓库）
 config.yaml
+CLAUDE.md
 
 # 编译后的二进制文件
 hostmanager
