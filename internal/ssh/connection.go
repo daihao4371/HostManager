@@ -49,7 +49,7 @@ func CreateExpectScript(host models.Host) (string, error) {
 	sshArgs := fmt.Sprintf("-p %d", host.Port)
 	if host.IsZmodemEnabled() {
 		// 启用 Zmodem 支持需要的 SSH 选项
-		sshArgs += " -o RequestTTY=yes -o RemoteCommand=\"exec \\$SHELL -l\""
+		sshArgs += " -o RequestTTY=yes"
 	}
 
 	scriptContent := fmt.Sprintf(`#!/usr/bin/expect -f
