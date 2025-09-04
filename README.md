@@ -18,6 +18,13 @@
 - **收藏夹**: 快速访问常用服务器
 - **智能搜索**: 按服务器名称、IP快速定位
 - **双界面**: 图形化菜单 + 命令行，适合不同使用场景
+- **📁 Zmodem 支持**: 内置 sz/rz 文件传输功能
+
+### 📁 文件传输功能
+- **sz/rz 命令**: 连接后直接使用 sz 发送文件，rz 接收文件
+- **自动检测**: 智能检测系统是否安装 lrzsz 工具
+- **无需配置**: 默认为所有主机启用 Zmodem 支持
+- **跨平台**: 支持 macOS、Linux、Windows 客户端
 
 ## 🚀 快速开始
 
@@ -28,23 +35,43 @@
 
 ### 安装
 
+#### 方法 1: 从 GitHub Releases 下载（推荐）
+
+1. 从 [Releases 页面](https://github.com/daihao4371/hostmanager/releases) 下载适合你系统的预编译版本
+2. 解压到任意目录
+3. 运行安装脚本进行全局安装：
+
+```bash
+# 解压下载的文件
+tar -xzf hostmanager-v1.0.2-darwin-amd64.tar.gz  # macOS Intel
+# 或
+tar -xzf hostmanager-v1.0.2-darwin-arm64.tar.gz  # macOS Apple Silicon
+
+cd hostmanager-v1.0.2-*
+chmod +x install-global.sh
+./install-global.sh
+```
+
+安装完成后可在任意位置使用 `hm` 命令。
+
+#### 方法 2: 使用 Go 安装
+
+```bash
+go install github.com/daihao4371/hostmanager@latest
+```
+
+#### 方法 3: 源码编译
+
 ```bash
 # 克隆项目
 git clone https://github.com/daihao4371/hostmanager.git
 cd hostmanager
 
-# 编译macOS版本
+# 编译
 go build -o hostmanager .
 
-# 安装到系统路径
-sudo cp hostmanager /usr/local/bin/
-
-# 或者安装到用户路径
-cp hostmanager ~/bin/  # 确保~/bin在PATH中
-
-# iTerm2集成设置
-chmod +x install.sh
-./install.sh
+# 全局安装
+./install-global.sh
 ```
 
 ### 在iTerm2中使用
@@ -67,6 +94,32 @@ chmod +x install.sh
 
 # 检查服务器在线状态  
 ./hostmanager status server1
+```
+
+### 📁 文件传输使用
+
+连接到服务器后，可直接使用 sz/rz 命令：
+
+```bash
+# 发送文件到本地
+sz filename.txt
+sz *.log        # 发送多个文件
+sz /path/to/dir/* # 发送目录下所有文件
+
+# 从本地接收文件到远程
+rz              # 会弹出文件选择对话框
+```
+
+**前提条件**: 需要安装 lrzsz 工具包
+```bash
+# macOS
+brew install lrzsz
+
+# Ubuntu/Debian
+sudo apt install lrzsz
+
+# CentOS/RHEL
+sudo yum install lrzsz
 ```
 
 ## 📋 SSH会话管理命令

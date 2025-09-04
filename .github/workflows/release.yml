@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+        exclude:
+          - goos: windows
+            goarch: arm64
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Get version
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+    - name: Build binary
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+        CGO_ENABLED: 0
+      run: |
+        BINARY_NAME="hostmanager"
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          BINARY_NAME="${BINARY_NAME}.exe"
+        fi
+        
+        go build -ldflags="-s -w" -o "${BINARY_NAME}" .
+        
+        # 创建发布包
+        PACKAGE_NAME="hostmanager-${{ steps.version.outputs.VERSION }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+        mkdir -p "${PACKAGE_NAME}"
+        
+        # 复制文件到发布包
+        cp "${BINARY_NAME}" "${PACKAGE_NAME}/"
+        cp config.example.yaml "${PACKAGE_NAME}/config.yaml"
+        cp install.sh "${PACKAGE_NAME}/"
+        cp install-global.sh "${PACKAGE_NAME}/"
+        cp completion.bash "${PACKAGE_NAME}/"
+        cp completion.zsh "${PACKAGE_NAME}/"
+        cp README.md "${PACKAGE_NAME}/"
+        
+        # 创建压缩包
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          zip -r "${PACKAGE_NAME}.zip" "${PACKAGE_NAME}"
+        else
+          tar -czf "${PACKAGE_NAME}.tar.gz" "${PACKAGE_NAME}"
+        fi
+
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: hostmanager-${{ steps.version.outputs.VERSION }}-${{ matrix.goos }}-${{ matrix.goarch }}.*
+        file_glob: true
+        tag: ${{ github.ref }}
+        overwrite: true
+        body: |
+          ## HostManager ${{ steps.version.outputs.VERSION }}
+          
+          ### 新功能
+          - ✨ 支持 Zmodem 文件传输 (sz/rz 命令)
+          - 🔧 改进配置文件查找逻辑
+          - 📦 提供多平台预编译二进制文件
+          
+          ### 安装方法
+          
+          #### 方法 1: 下载预编译二进制文件
+          1. 从下方选择适合你系统的文件下载
+          2. 解压到任意目录
+          3. 运行 `./install-global.sh` 进行全局安装
+          
+          #### 方法 2: 使用 Go 安装
+          ```bash
+          go install github.com/daihao4371/hostmanager@${{ steps.version.outputs.VERSION }}
+          ```
+          
+          ### 使用说明
+          - `hm` - 启动交互式界面
+          - `hm list` - 列出所有主机
+          - `hm connect <主机名>` - 连接指定主机
+          
+          ### Zmodem 支持
+          连接到服务器后可直接使用：
+          - `sz filename` - 发送文件到本地
+          - `rz` - 接收本地文件到远程
+          
+          需要先安装 lrzsz: `brew install lrzsz` (macOS) 或 `apt install lrzsz` (Ubuntu)
