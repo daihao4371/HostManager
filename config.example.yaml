@@ -19,6 +19,7 @@ groups:
     auth_type: password
     password: ""  # 请填写您的密码
     description: 主数据库服务器
+    # zmodem_enable: false  # 如需禁用 Zmodem 文件传输，取消注释并设为 false（默认启用）
     tags:
     - production
     - database

@@ -28,17 +28,39 @@ func CheckExpectAvailable() bool {
 	return err == nil
 }
 
-// 创建expect脚本进行SSH密码认证
+// 检查 lrzsz 工具是否可用（sz/rz 命令）
+func CheckLrzszAvailable() bool {
+	_, szErr := exec.LookPath("sz")
+	_, rzErr := exec.LookPath("rz")
+	return szErr == nil && rzErr == nil
+}
+
+// 检查 Zmodem 支持的综合状态
+func CheckZmodemSupport() (bool, string) {
+	if !CheckLrzszAvailable() {
+		return false, "系统缺少 lrzsz 工具包，请安装：brew install lrzsz (macOS) 或 apt install lrzsz (Ubuntu)"
+	}
+	return true, ""
+}
+
+// 创建expect脚本进行SSH密码认证（支持Zmodem）
 func CreateExpectScript(host models.Host) (string, error) {
+	// 构建SSH参数，支持Zmodem时添加必要选项
+	sshArgs := fmt.Sprintf("-p %d", host.Port)
+	if host.IsZmodemEnabled() {
+		// 启用 Zmodem 支持需要的 SSH 选项
+		sshArgs += " -o RequestTTY=yes -o RemoteCommand=\"exec \\$SHELL -l\""
+	}
+
 	scriptContent := fmt.Sprintf(`#!/usr/bin/expect -f
 set timeout 30
-spawn ssh -p %d %s@%s
+spawn ssh %s %s@%s
 expect {
     "yes/no" { send "yes\r"; exp_continue }
     "password:" { send "%s\r" }
 }
 interact
-`, host.Port, host.Username, host.IP, host.Password)
+`, sshArgs, host.Username, host.IP, host.Password)
 
 	tmpFile, err := os.CreateTemp("", "ssh_expect_*.exp")
 	if err != nil {
@@ -111,6 +133,18 @@ func Connect(host models.Host, onConnect func(models.Host)) {
 	// 添加端口参数
 	if host.Port != 22 {
 		sshArgs = append(sshArgs, "-p", strconv.Itoa(host.Port))
+	}
+
+	// 添加 Zmodem 支持参数
+	if host.IsZmodemEnabled() {
+		// 检查 Zmodem 支持状态
+		if supported, msg := CheckZmodemSupport(); !supported {
+			fmt.Printf("⚠️  Zmodem 不可用: %s\n", msg)
+		} else {
+			fmt.Printf("📁 Zmodem 文件传输已启用 (sz/rz 命令可用)\n")
+			// 添加必要的SSH选项以支持Zmodem
+			sshArgs = append(sshArgs, "-o", "RequestTTY=yes")
+		}
 	}
 
 	// 添加目标地址

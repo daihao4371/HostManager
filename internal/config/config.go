@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v2"
 
@@ -43,9 +44,41 @@ type Config struct {
 	UIConfig UIConfig       `yaml:"ui_config"`
 }
 
+// 查找配置文件的可能位置
+func findConfigFile(filename string) (string, error) {
+	// 配置文件查找优先级
+	searchPaths := []string{
+		filename,                                    // 当前目录
+		filepath.Join(".", filename),               // 当前目录（显式）
+		filepath.Join(os.Getenv("HOME"), filename), // 用户家目录
+		"/etc/hostmanager/" + filename,             // 系统配置目录
+	}
+
+	// 如果是相对路径，尝试找到程序所在目录
+	if execPath, err := os.Executable(); err == nil {
+		execDir := filepath.Dir(execPath)
+		searchPaths = append(searchPaths, filepath.Join(execDir, filename))
+	}
+
+	// 按优先级查找配置文件
+	for _, path := range searchPaths {
+		if _, err := os.Stat(path); err == nil {
+			return path, nil
+		}
+	}
+
+	return "", os.ErrNotExist
+}
+
 // 加载配置文件
 func LoadConfig(filePath string) (*Config, error) {
-	data, err := os.ReadFile(filePath)
+	// 查找配置文件的实际位置
+	actualPath, err := findConfigFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := os.ReadFile(actualPath)
 	if err != nil {
 		return nil, err
 	}
